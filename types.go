@@ -1,4 +1,4 @@
-package schema
+package main
 
 import (
 	"encoding/json"
@@ -49,6 +49,8 @@ var (
 	}
 )
 
+const errorMsg = "data type %s not implemented yet, sorry! "
+
 func TypeFactory(t interface{}) DataType {
 	switch t.(type) {
 	case json.Number:
@@ -58,7 +60,6 @@ func TypeFactory(t interface{}) DataType {
 	case map[string]interface{}:
 		return structType
 	default:
-		msg := fmt.Sprintf("data type %v not implemented yet, sorry! ", reflect.TypeOf(t).String())
-		panic(msg)
+		panic(fmt.Sprintf(errorMsg, reflect.TypeOf(t).String()))
 	}
 }

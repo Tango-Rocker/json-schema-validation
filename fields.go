@@ -1,4 +1,4 @@
-package schema
+package main
 
 import "fmt"
 
@@ -19,12 +19,19 @@ func NewField(name string, required bool, t DataType) *Field {
 	return f
 }
 
+const (
+	missingMsg = "missing field %s"
+	//TODO: unir estos 2 mensajes en uno, imprimiendo el expected y el actual
+	structExpectedMSg = "field %s expected as struct, but found %v"
+	typeXExpectedMsg  = "field %s must be of type %d but found %v"
+)
+
 func (f *Field) Validate(tree map[string]interface{}) error {
 	source := tree[f.name]
 
 	if source == nil {
 		if f.isRequired {
-			return fmt.Errorf("missing field %s", f.name)
+			return fmt.Errorf(missingMsg, f.name)
 		}
 		return nil
 	}
@@ -38,11 +45,11 @@ func (f *Field) Validate(tree map[string]interface{}) error {
 				}
 			}
 		} else {
-			return fmt.Errorf("field %s expected as struct, but foun %v", f.name, source)
+			return fmt.Errorf(structExpectedMSg, f.name, source)
 		}
 	} else {
 		if !f.DataType.IsValid(source) {
-			return fmt.Errorf("field %s must be of type %d but found %v", f.name, f.DataType.Type, source)
+			return fmt.Errorf(typeXExpectedMsg, f.name, f.DataType.Type, source)
 		}
 	}
 
